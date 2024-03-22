@@ -1,15 +1,17 @@
-import os
 from chalice import Chalice, Response
 import logging
 import requests
+import boto3
 
 
 app = Chalice(app_name="google_login_back")
 app.log.setLevel(logging.DEBUG)
 
-CLIENT_ID = os.getenv("GOOGLE_OAUTH_CLIENT_ID")
-CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
-REDIRECT_URI = os.getenv("REDIRECT_URI")
+ssm = boto3.client("ssm")
+
+CLIENT_ID = ssm.get_parameter(Name="/google_oauth/client_id")["Parameter"]["Value"]
+CLIENT_SECRET = ssm.get_parameter(Name="/google_oauth/client_secret")["Parameter"]["Value"]
+REDIRECT_URI = ssm.get_parameter(Name="/google_oauth/redirect_uri")["Parameter"]["Value"]
 
 
 @app.route("/get_token", methods=["POST"])

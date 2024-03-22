@@ -5,6 +5,7 @@ services:
       context: .
     volumes:
       - .:/work
+      - ~/.aws/:/root/.aws
     ports:
       - 8000:8000
     command: chalice local --host=0.0.0.0
