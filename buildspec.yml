@@ -1,8 +1,14 @@
 version: 0.2
 
 phases:
+  pre_build:
+    commands:
+      - aws s3 cp s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json .chalice/deployed/dev.json || true
   build:
     on-failure: ABORT
     commands:
       - pip install -r requirements.txt
       - chalice deploy
+  post_build:
+    commands:
+      - aws s3 cp .chalice/deployed/dev.json s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json
