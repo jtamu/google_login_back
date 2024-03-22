@@ -12,7 +12,7 @@ CLIENT_SECRET = os.getenv("GOOGLE_OAUTH_CLIENT_SECRET")
 REDIRECT_URI = os.getenv("REDIRECT_URI")
 
 
-@app.route("/token", methods=["POST"])
+@app.route("/get_token", methods=["POST"])
 def index():
     req = app.current_request.json_body or {}
     if "code" not in req:
