@@ -34,6 +34,7 @@ def index():
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         data=encoded,
     )
-    res.raise_for_status()
+    if res.status_code >= 300:
+        return Response(body={"message": "server error"}, status_code=500)
 
     return res.json()
