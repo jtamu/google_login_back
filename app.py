@@ -34,6 +34,6 @@ def index():
         headers={"Content-Type": "application/x-www-form-urlencoded"},
         data=encoded,
     )
-    app.log.info(res.json())
+    res.raise_for_status()
 
-    return {"hello": "world"}
+    return res.json()
