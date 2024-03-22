@@ -1,4 +1,4 @@
-from chalice import Chalice, Response
+from chalice import Chalice, Response, CORSConfig
 import logging
 import requests
 import boto3
@@ -15,7 +15,7 @@ CLIENT_SECRET = ssm.get_parameter(Name="/google_oauth/client_secret")["Parameter
 REDIRECT_URI = ssm.get_parameter(Name="/google_oauth/redirect_uri")["Parameter"]["Value"]
 
 
-@app.route("/get_token", methods=["POST"])
+@app.route("/get_token", methods=["POST"], cors=CORSConfig(allow_origin="https://google-login.jtamu-sample-app.link/"))
 def index():
     req = app.current_request.json_body or {}
     if "code" not in req:
