@@ -1,0 +1,8 @@
+version: 0.2
+
+phases:
+  build:
+    on-failure: ABORT
+    commands:
+      - pip install -r requirements.txt
+      - chalice deploy

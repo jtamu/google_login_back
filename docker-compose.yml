@@ -1,0 +1,10 @@
+version: '3'
+services:
+  python:
+    build:
+      context: .
+    volumes:
+      - .:/work
+    ports:
+      - 8000:8000
+    command: chalice local --host=0.0.0.0
