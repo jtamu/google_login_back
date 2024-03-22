@@ -2,6 +2,7 @@ from chalice import Chalice, Response
 import logging
 import requests
 import boto3
+import urllib
 
 
 app = Chalice(app_name="google_login_back")
@@ -27,7 +28,12 @@ def index():
         "redirect_uri": REDIRECT_URI,
         "grant_type": "authorization_code",
     }
-    res = requests.post("https://oauth2.googleapis.com/token", json=body)
+    encoded = urllib.parse.urlencode(body)
+    res = requests.post(
+        "https://oauth2.googleapis.com/token",
+        headers={"Content-Type": "application/x-www-form-urlencoded"},
+        data=encoded,
+    )
     app.log.info(res.json())
 
     return {"hello": "world"}
