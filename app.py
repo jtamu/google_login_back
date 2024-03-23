@@ -35,6 +35,7 @@ def index():
         data=encoded,
     )
     if res.status_code >= 300:
+        app.log.error(res.json())
         return Response(body={"message": "server error"}, status_code=500)
 
     return res.json()
