@@ -8,6 +8,8 @@ services:
       - ~/.aws/:/root/.aws
     ports:
       - 8000:8000
+    environment:
+      DB_ENDPOINT: http://dynamo:8000
     command: chalice local --host=0.0.0.0
   dynamo:
     image: amazon/dynamodb-local

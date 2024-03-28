@@ -4,6 +4,7 @@ import requests
 import boto3
 import urllib
 import jwt
+from chalicelib.models import Users
 
 
 app = Chalice(app_name="google_login_back")
@@ -62,6 +63,9 @@ def login():
         app.log.error(e)
         return Response(body={"message": "server error"}, status_code=500)
 
-    # app.log.info(payload["iss"])
-    # app.log.info(payload["sub"])
+    count = Users.count(payload["iss"], Users.subject == payload["sub"])
+    if count == 0:
+        u = Users(issuer=payload["iss"], subject=payload["sub"])
+        u.save()
+
     return Response(body=None, status_code=201)
