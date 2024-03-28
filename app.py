@@ -3,6 +3,7 @@ import logging
 import requests
 import boto3
 import urllib
+import jwt
 
 
 app = Chalice(app_name="google_login_back")
@@ -39,3 +40,28 @@ def index():
         return Response(body={"message": "server error"}, status_code=500)
 
     return res.json()
+
+
+@app.route("/login", methods=["POST"], cors=CORSConfig(allow_origin="https://google-login.jtamu-sample-app.link"))
+def login():
+    if "Authorization" not in app.current_request.headers:
+        return Response(body={"message": "server error"}, status_code=500)
+
+    id_token = app.current_request.headers["Authorization"].removeprefix("Bearer ")
+
+    jwks_client = jwt.PyJWKClient("https://www.googleapis.com/oauth2/v3/certs")
+    try:
+        signing_key = jwks_client.get_signing_key_from_jwt(id_token)
+        payload = jwt.decode(
+            id_token,
+            signing_key.key,
+            algorithms=["RS256"],
+            audience=CLIENT_ID,
+        )
+    except Exception as e:
+        app.log.error(e)
+        return Response(body={"message": "server error"}, status_code=500)
+
+    # app.log.info(payload["iss"])
+    # app.log.info(payload["sub"])
+    return Response(body=None, status_code=201)
