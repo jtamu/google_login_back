@@ -12,8 +12,6 @@ services:
   dynamo:
     image: amazon/dynamodb-local
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
-    ports:
-      - 8002:8000
     volumes:
       - ./dynamodb:/home/dynamodblocal/data
 
