@@ -13,8 +13,8 @@ class Microposts(Model):
         write_capacity_units = 1
         read_capacity_units = 1
 
-    id = UnicodeAttribute(hash_key=True, default=str(uuid.uuid4()))
-    userId = UnicodeAttribute(null=False)
+    userId = UnicodeAttribute(hash_key=True, null=False)
+    postedAt = UTCDateTimeAttribute(range_key=True, null=False, default=datetime.now())
     content = UnicodeAttribute(null=False)
     createdAt = UTCDateTimeAttribute(null=False, default=datetime.now())
     updatedAt = UTCDateTimeAttribute(null=False, default=datetime.now())

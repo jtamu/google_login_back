@@ -53,7 +53,7 @@ def post():
     micropost = user.post(req["content"])
     micropost.save()
 
-    return Response(body={"id": micropost.id}, status_code=201)
+    return Response(body={"posted_at": micropost.postedAt.isoformat()}, status_code=201)
 
 
 def _login() -> Users:
