@@ -43,8 +43,20 @@ def index():
     return res.json()
 
 
-@app.route("/login", methods=["POST"], cors=CORSConfig(allow_origin="https://google-login.jtamu-sample-app.link"))
-def login():
+@app.route("/microposts", methods=["POST"], cors=CORSConfig(allow_origin="https://google-login.jtamu-sample-app.link"))
+def post():
+    req = app.current_request.json_body or {}
+    if "content" not in req:
+        return Response(body={"message": "server error"}, status_code=500)
+
+    user = _login()
+    micropost = user.post(req["content"])
+    micropost.save()
+
+    return Response(body={"id": micropost.id}, status_code=201)
+
+
+def _login() -> Users:
     if "Authorization" not in app.current_request.headers:
         return Response(body={"message": "server error"}, status_code=500)
 
@@ -68,4 +80,4 @@ def login():
         u = Users(issuer=payload["iss"], subject=payload["sub"])
         u.save()
 
-    return Response(body=None, status_code=201)
+    return Users.get(payload["iss"], payload["sub"])
