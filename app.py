@@ -4,7 +4,8 @@ import requests
 import boto3
 import urllib
 import jwt
-from chalicelib.models import Users
+from chalicelib.models import Users, Microposts
+from chalicelib.utils import login
 
 
 app = Chalice(app_name="google_login_back")
@@ -49,35 +50,24 @@ def post():
     if "content" not in req:
         return Response(body={"message": "server error"}, status_code=500)
 
-    user = _login()
+    try:
+        user = login(app, CLIENT_ID)
+    except Exception:
+        return Response(body={"message": "server error"}, status_code=500)
+
     micropost = user.post(req["content"])
     micropost.save()
 
     return Response(body={"posted_at": micropost.postedAt.isoformat()}, status_code=201)
 
 
-def _login() -> Users:
-    if "Authorization" not in app.current_request.headers:
-        return Response(body={"message": "server error"}, status_code=500)
-
-    id_token = app.current_request.headers["Authorization"].removeprefix("Bearer ")
-
-    jwks_client = jwt.PyJWKClient("https://www.googleapis.com/oauth2/v3/certs")
+@app.route("/microposts", methods=["GET"], cors=CORSConfig(allow_origin="https://google-login.jtamu-sample-app.link"))
+def get_list():
     try:
-        signing_key = jwks_client.get_signing_key_from_jwt(id_token)
-        payload = jwt.decode(
-            id_token,
-            signing_key.key,
-            algorithms=["RS256"],
-            audience=CLIENT_ID,
-        )
-    except Exception as e:
-        app.log.error(e)
+        user = login(app, CLIENT_ID)
+    except Exception:
         return Response(body={"message": "server error"}, status_code=500)
 
-    count = Users.count(payload["iss"], Users.subject == payload["sub"])
-    if count == 0:
-        u = Users(issuer=payload["iss"], subject=payload["sub"])
-        u.save()
-
-    return Users.get(payload["iss"], payload["sub"])
+    posts = Microposts.query(user.id)
+    res = [post.to_simple_dict() for post in posts]
+    return Response(body=res, status_code=200)
