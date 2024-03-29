@@ -3,8 +3,7 @@ import logging
 import requests
 import boto3
 import urllib
-import jwt
-from chalicelib.models import Users, Microposts
+from chalicelib.models import Microposts
 from chalicelib.utils import login
 
 
@@ -46,13 +45,13 @@ def index():
 
 @app.route("/microposts", methods=["POST"], cors=CORSConfig(allow_origin="https://google-login.jtamu-sample-app.link"))
 def post():
-    req = app.current_request.json_body or {}
-    if "content" not in req:
-        return Response(body={"message": "server error"}, status_code=500)
-
     try:
         user = login(app, CLIENT_ID)
     except Exception:
+        return Response(body={"message": "server error"}, status_code=500)
+
+    req = app.current_request.json_body or {}
+    if "content" not in req:
         return Response(body={"message": "server error"}, status_code=500)
 
     micropost = user.post(req["content"])
