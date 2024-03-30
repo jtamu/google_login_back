@@ -9,7 +9,8 @@
       }
     },
     "dev": {
-      "api_gateway_stage": "api"
+      "api_gateway_stage": "api",
+      "autogen_policy": false
     }
   }
 }

@@ -1,0 +1,36 @@
+{
+	"Version": "2012-10-17",
+	"Statement": [
+		{
+			"Effect": "Allow",
+			"Action": [
+				"ssm:GetParameter"
+			],
+			"Resource": [
+				"*"
+			],
+			"Sid": "327cd9d71df94319a98c5b0c931940fd"
+		},
+		{
+			"Effect": "Allow",
+			"Action": [
+				"logs:CreateLogGroup",
+				"logs:CreateLogStream",
+				"logs:PutLogEvents"
+			],
+			"Resource": "arn:*:logs:*:*:*"
+		},
+        {
+            "Effect": "Allow",
+            "Action": [
+              "dynamodb:PutItem",
+              "dynamodb:DeleteItem",
+              "dynamodb:UpdateItem",
+              "dynamodb:GetItem",
+              "dynamodb:Scan",
+              "dynamodb:Query"
+            ],
+            "Resource": "*"
+        }
+    ]
+}
