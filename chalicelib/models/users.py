@@ -21,4 +21,4 @@ class Users(Model):
     updatedAt = UTCDateTimeAttribute(null=False, default=datetime.now())
 
     def post(self, content: str):
-        return Microposts(userId=self.id, content=content)
+        return Microposts(userId=self.id, postedAt=datetime.now(), content=content)
