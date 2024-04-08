@@ -3,6 +3,7 @@ import logging
 import requests
 import boto3
 import urllib
+from datetime import datetime, timedelta, timezone
 from chalicelib.models import Microposts
 from chalicelib.utils import login
 
@@ -57,6 +58,27 @@ def post():
     micropost = user.post(req["content"])
     micropost.save()
 
+    if "access_token" in req:
+        start, end, summary = _parse_schedule(req["content"])
+        if start and end and summary:
+            app.log.info(f"googleカレンダーに予定({summary})を作成します")
+            token = req["access_token"]
+            res = requests.post(
+                "https://www.googleapis.com/calendar/v3/calendars/primary/events",
+                headers={"Authorization": f"Bearer {token}"},
+                json={
+                    "summary": summary,
+                    "description": "これはサンプルアプリで作成した予定です",
+                    "start": {"dateTime": start.isoformat()},
+                    "end": {"dateTime": end.isoformat()},
+                },
+            )
+            if res.status_code >= 300:
+                app.log.error(res.json())
+                return Response(body={"message": "server error"}, status_code=500)
+
+            app.log.info(f"googleカレンダーに予定({summary})を作成しました")
+
     return Response(body={"posted_at": micropost.postedAt.isoformat()}, status_code=201)
 
 
@@ -70,3 +92,23 @@ def get_list():
     posts = Microposts.query(user.id)
     res = [post.to_simple_dict() for post in posts]
     return Response(body=res, status_code=200)
+
+
+def _parse_schedule(schedule_str):
+    # 文字列をスペースで分割して情報を取得
+    parts = schedule_str.split()
+
+    if len(parts) < 5 or parts[2] != "~":
+        return None, None, None
+
+    # 日付と時間をパースしてdatetimeオブジェクトに変換
+    start_str = f"{parts[0]} {parts[1]}"
+    end_str = f"{parts[3]} {parts[4]}"
+
+    start = datetime.strptime(start_str, "%Y/%m/%d %H:%M").replace(tzinfo=timezone(timedelta(hours=9)))
+    end = datetime.strptime(end_str, "%Y/%m/%d %H:%M").replace(tzinfo=timezone(timedelta(hours=9)))
+
+    # サマリを取得
+    summary = " ".join(parts[5:])
+
+    return start, end, summary
