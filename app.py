@@ -6,6 +6,7 @@ import urllib
 from datetime import datetime, timedelta, timezone
 from chalicelib.models import Microposts
 from chalicelib.utils import login
+import jwt
 
 
 app = Chalice(app_name="google_login_back")
@@ -112,3 +113,28 @@ def _parse_schedule(schedule_str):
     summary = " ".join(parts[5:])
 
     return start, end, summary
+
+
+@app.route("/auth0/microposts", methods=["GET"])
+def get_micropost_for_auth0():
+    if "Authorization" not in app.current_request.headers:
+        return Response(body=None, status_code=401)
+
+    access_token = app.current_request.headers["Authorization"].removeprefix("Bearer ")
+
+    jwks_client = jwt.PyJWKClient("https://dev-yj8jxr3h2g1b3j0k.us.auth0.com/.well-known/jwks.json")
+    try:
+        signing_key = jwks_client.get_signing_key_from_jwt(access_token)
+        payload = jwt.decode(
+            access_token,
+            signing_key.key,
+            algorithms=["RS256"],
+            audience="my-custom-api",
+        )
+    except Exception as e:
+        app.log.error(e)
+        return Response(body=None, status_code=401)
+
+    posts = Microposts.query(payload.get("sub"))
+    res = [post.to_simple_dict() for post in posts]
+    return Response(body=res, status_code=200)
