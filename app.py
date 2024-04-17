@@ -17,6 +17,7 @@ ssm = boto3.client("ssm")
 CLIENT_ID = ssm.get_parameter(Name="/google_oauth/client_id")["Parameter"]["Value"]
 CLIENT_SECRET = ssm.get_parameter(Name="/google_oauth/client_secret")["Parameter"]["Value"]
 REDIRECT_URI = ssm.get_parameter(Name="/google_oauth/redirect_uri")["Parameter"]["Value"]
+AUTH0_CLIENT_ID = ssm.get_parameter(Name="/auth0/client_id")["Parameter"]["Value"]
 
 
 @app.route("/get_token", methods=["POST"], cors=CORSConfig(allow_origin="https://google-login.jtamu-sample-app.link"))
@@ -120,16 +121,16 @@ def get_micropost_for_auth0():
     if "Authorization" not in app.current_request.headers:
         return Response(body=None, status_code=401)
 
-    access_token = app.current_request.headers["Authorization"].removeprefix("Bearer ")
+    id_token = app.current_request.headers["Authorization"].removeprefix("Bearer ")
 
     jwks_client = jwt.PyJWKClient("https://dev-yj8jxr3h2g1b3j0k.us.auth0.com/.well-known/jwks.json")
     try:
-        signing_key = jwks_client.get_signing_key_from_jwt(access_token)
+        signing_key = jwks_client.get_signing_key_from_jwt(id_token)
         payload = jwt.decode(
-            access_token,
+            id_token,
             signing_key.key,
             algorithms=["RS256"],
-            audience="my-custom-api",
+            audience=AUTH0_CLIENT_ID,
         )
     except Exception as e:
         app.log.error(e)
