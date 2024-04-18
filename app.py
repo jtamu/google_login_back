@@ -136,6 +136,11 @@ def get_micropost_for_auth0():
         app.log.error(e)
         return Response(body=None, status_code=401)
 
+    # scopeの検証
+    if "read:microposts" not in payload["scope"].split():
+        app.log.error("insufficient scope")
+        return Response(body=None, status_code=401)
+
     posts = Microposts.query(payload.get("sub"))
     res = [post.to_simple_dict() for post in posts]
     return Response(body=res, status_code=200)
