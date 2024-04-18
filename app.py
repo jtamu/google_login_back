@@ -121,13 +121,13 @@ def get_micropost_for_auth0():
     if "Authorization" not in app.current_request.headers:
         return Response(body=None, status_code=401)
 
-    id_token = app.current_request.headers["Authorization"].removeprefix("Bearer ")
+    access_token = app.current_request.headers["Authorization"].removeprefix("Bearer ")
 
     jwks_client = jwt.PyJWKClient("https://dev-yj8jxr3h2g1b3j0k.us.auth0.com/.well-known/jwks.json")
     try:
-        signing_key = jwks_client.get_signing_key_from_jwt(id_token)
+        signing_key = jwks_client.get_signing_key_from_jwt(access_token)
         payload = jwt.decode(
-            id_token,
+            access_token,
             signing_key.key,
             algorithms=["RS256"],
             audience=AUTH0_CLIENT_ID,
