@@ -116,6 +116,41 @@ def _parse_schedule(schedule_str):
     return start, end, summary
 
 
+@app.route("/auth0/microposts", methods=["POST"])
+def post_micropost_for_auth0():
+    if "Authorization" not in app.current_request.headers:
+        return Response(body=None, status_code=401)
+
+    access_token = app.current_request.headers["Authorization"].removeprefix("Bearer ")
+
+    jwks_client = jwt.PyJWKClient("https://dev-yj8jxr3h2g1b3j0k.us.auth0.com/.well-known/jwks.json")
+    try:
+        signing_key = jwks_client.get_signing_key_from_jwt(access_token)
+        payload = jwt.decode(
+            access_token,
+            signing_key.key,
+            algorithms=["RS256"],
+            audience=AUTH0_CLIENT_ID,
+        )
+    except Exception as e:
+        app.log.error(e)
+        return Response(body=None, status_code=401)
+
+    # scopeの検証
+    if "read:microposts" not in payload["scope"].split():
+        app.log.error("insufficient scope")
+        return Response(body=None, status_code=401)
+
+    req = app.current_request.json_body or {}
+    if "content" not in req:
+        return Response(body={"message": "server error"}, status_code=500)
+
+    micropost = Microposts(userId=payload["sub"], postedAt=datetime.now(), content=req["content"])
+    micropost.save()
+
+    return Response(body={"posted_at": micropost.postedAt.isoformat()}, status_code=201)
+
+
 @app.route("/auth0/microposts", methods=["GET"])
 def get_micropost_for_auth0():
     if "Authorization" not in app.current_request.headers:
