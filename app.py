@@ -179,3 +179,8 @@ def get_micropost_for_auth0():
     posts = Microposts.query(payload.get("sub"))
     res = [post.to_simple_dict() for post in posts]
     return Response(body=res, status_code=200)
+
+
+@app.route("/ping", methods=["GET"])
+def ping():
+    return Response(body={"message": "pong"})
