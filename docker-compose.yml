@@ -11,7 +11,8 @@ services:
     environment:
       DB_ENDPOINT: http://dynamo:8000
       TEST_PORT: 8008
-      PYTEST_ADDOPTS: "-v --pact-files=pacts/*.json"
+      PACT_BROKER_BASE_URL: ${PACT_BROKER_BASE_URL}
+      PACT_BROKER_AUTH: ${PACT_BROKER_USERNAME}:${PACT_BROKER_PASSWORD}
     command: chalice local --host=0.0.0.0 --port=8002
   dynamo:
     image: amazon/dynamodb-local

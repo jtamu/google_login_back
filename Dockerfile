@@ -4,4 +4,6 @@ WORKDIR /work
 
 COPY . /work
 
+RUN apt update && apt install -y git
+RUN git config --global --add safe.directory /work
 RUN pip install -r requirements.txt
