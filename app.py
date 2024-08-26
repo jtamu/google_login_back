@@ -17,7 +17,7 @@ ssm = boto3.client("ssm")
 CLIENT_ID = ssm.get_parameter(Name="/google_oauth/client_id")["Parameter"]["Value"]
 CLIENT_SECRET = ssm.get_parameter(Name="/google_oauth/client_secret")["Parameter"]["Value"]
 REDIRECT_URI = ssm.get_parameter(Name="/google_oauth/redirect_uri")["Parameter"]["Value"]
-AUTH0_CLIENT_ID = ssm.get_parameter(Name="/auth0/client_id")["Parameter"]["Value"]
+AUTH0_AUDIENCE = "my-custom-api"
 
 
 @app.route("/get_token", methods=["POST"], cors=CORSConfig(allow_origin="https://google-login.jtamu-sample-app.link"))
@@ -130,7 +130,7 @@ def post_micropost_for_auth0():
             access_token,
             signing_key.key,
             algorithms=["RS256"],
-            audience=AUTH0_CLIENT_ID,
+            audience=AUTH0_AUDIENCE,
         )
     except Exception as e:
         app.log.error(e)
@@ -165,7 +165,7 @@ def get_micropost_for_auth0():
             access_token,
             signing_key.key,
             algorithms=["RS256"],
-            audience=AUTH0_CLIENT_ID,
+            audience=AUTH0_AUDIENCE,
         )
     except Exception as e:
         app.log.error(e)
