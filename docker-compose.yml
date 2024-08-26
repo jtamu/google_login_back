@@ -19,6 +19,11 @@ services:
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
     volumes:
       - ./dynamodb:/home/dynamodblocal/data
+  dynamo-test:
+    image: amazon/dynamodb-local
+    command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
+    volumes:
+      - ./dynamodb-test:/home/dynamodblocal/data
 
   dynamo-admin:
     image: aaronshaf/dynamodb-admin:latest

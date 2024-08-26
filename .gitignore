@@ -3,6 +3,6 @@
 
 __pycache__/
 .vscode/
-dynamodb/
+dynamodb*/
 pacts/
 .env*
