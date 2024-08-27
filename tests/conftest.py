@@ -26,11 +26,15 @@ def start_chalice_local():
             stderr=subprocess.STDOUT,
             text=True,
         )
-        # サービスが完全に起動するまで待機
-        time.sleep(5)
-        yield
-        process.terminate()
-        process.wait()
+
+    # サービスが完全に起動するまで待機
+    time.sleep(5)
+    yield
+    process.terminate()
+    process.wait()
+
+    with open(filename, "r") as f:
+        print("\nchalice output:\n", f.read())
 
 
 @pytest.fixture(scope="session")
