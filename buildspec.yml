@@ -10,7 +10,7 @@ phases:
     on-failure: ABORT
     commands:
       - docker compose up dynamo-test -d
-      - ./test.sh
+      - docker compose run python ./test.sh
       - docker compose stop
       - aws s3 cp s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json .chalice/deployed/dev.json || true
 
