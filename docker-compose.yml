@@ -5,7 +5,6 @@ services:
       context: .
     volumes:
       - .:/work
-      - ~/.aws/:/root/.aws
     ports:
       - 8002:8002
     environment:
@@ -13,6 +12,9 @@ services:
       TEST_PORT: 8008
       PACT_BROKER_BASE_URL: ${PACT_BROKER_BASE_URL}
       PACT_BROKER_AUTH: ${PACT_BROKER_USERNAME}:${PACT_BROKER_PASSWORD}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
+      AWS_DEFAULT_REGION: ap-northeast-1
     command: chalice local --host=0.0.0.0 --port=8002
   dynamo:
     image: amazon/dynamodb-local
