@@ -12,10 +12,13 @@ phases:
       - TEMP_ROLE=$(aws sts assume-role --role-arn $ASSUME_ROLE_ARN --role-session-name test)
       - export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
       - export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
+      - export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
       - echo "AWS_ACCESS_KEY_ID is :"
       - ./mask_secret.sh $AWS_ACCESS_KEY_ID
       - echo "AWS_SECRET_ACCESS_KEY is :"
       - ./mask_secret.sh $AWS_SECRET_ACCESS_KEY
+      - echo "AWS_SESSION_TOKEN is :"
+      - ./mask_secret.sh $AWS_SESSION_TOKEN
       - docker compose up dynamo-test -d
       - docker compose run python ./test.sh
       - docker compose stop
