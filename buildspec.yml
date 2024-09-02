@@ -9,21 +9,20 @@ phases:
   pre_build:
     on-failure: ABORT
     commands:
-      # - TEMP_ROLE=$(aws sts assume-role --role-arn $ASSUME_ROLE_ARN --role-session-name test)
-      # - export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
-      # - export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
-      # - export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
-      - docker compose up dynamo-test -d
+      - TEMP_ROLE=$(aws sts assume-role --role-arn $ASSUME_ROLE_ARN --role-session-name test)
+      - export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
+      - export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
+      - export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
+      - docker compose up -d
       # - docker network ls
       # - 'docker ps --format "{{.Names}}: {{.Networks}}"'
       # - export DYNAMO_TEST_HOST_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' google_login_back-dynamo-test-1)
       # - docker compose exec python curl ${DYNAMO_TEST_HOST_IP}:8000
-      # - docker compose exec python curl dynamo-test:8000
-      # - docker compose exec python ./test.sh
       - docker compose ps
       - sleep 5 # 起動待ち
       - curl localhost:8003
-      - ./test.sh ci
+      - docker compose exec python curl dynamo-test:8000
+      - docker compose exec python ./test.sh
       - docker compose stop
       - aws s3 cp s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json .chalice/deployed/dev.json || true
 
