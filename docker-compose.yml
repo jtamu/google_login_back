@@ -27,6 +27,8 @@ services:
     command: "-jar DynamoDBLocal.jar -sharedDb -dbPath ./data"
     volumes:
       - ./dynamodb-test:/home/dynamodblocal/data
+    ports:
+      - 8003:8000
 
   dynamo-admin:
     image: aaronshaf/dynamodb-admin:latest
