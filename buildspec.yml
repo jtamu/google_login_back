@@ -21,6 +21,7 @@ phases:
       # - docker compose exec python curl dynamo-test:8000
       # - docker compose exec python ./test.sh
       - docker compose ps
+      - sleep 5 # 起動待ち
       - curl localhost:8003
       - ./test.sh ci
       - docker compose stop
