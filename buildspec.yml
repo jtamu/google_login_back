@@ -14,8 +14,8 @@ phases:
       - export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
       - export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
       - docker compose up -d
-      # - docker network ls
-      # - 'docker ps --format "{{.Names}}: {{.Networks}}"'
+      - docker network ls
+      - 'docker ps --format "{{.Names}}: {{.Networks}}"'
       # - export DYNAMO_TEST_HOST_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' google_login_back-dynamo-test-1)
       # - docker compose exec python curl ${DYNAMO_TEST_HOST_IP}:8000
       - docker compose ps
