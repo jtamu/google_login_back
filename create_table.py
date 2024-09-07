@@ -1,4 +1,9 @@
+import os
 from chalicelib.models import Users, Microposts
+
+
+print(os.environ)
+
 
 if __name__ == "__main__":
     if not Users.exists():
