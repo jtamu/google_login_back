@@ -21,6 +21,7 @@ phases:
       - docker compose ps
       - sleep 20 # 起動待ち
       - curl localhost:8003
+      - codebuild-breakpoint
       - docker compose exec python bash
       - curl dynamo-test:8000
       - python get_request.py https://www.example.com
