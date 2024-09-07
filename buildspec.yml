@@ -20,14 +20,15 @@ phases:
       # - docker compose exec python curl ${DYNAMO_TEST_HOST_IP}:8000
       - docker compose ps
       - sleep 20 # 起動待ち
-      - curl localhost:8003
-      - codebuild-breakpoint
-      - docker compose exec python bash
-      - curl dynamo-test:8000
-      - python get_request.py https://www.example.com
-      - python get_request.py http://dynamo-test:8000
-      - python create_table.py
-      - python test_exec_dynamo.py
+      - docker compose exec python curl dynamo-test:8000
+      - docker compose exec python python check_botocore_connection.py
+      # - curl localhost:8003
+      # - codebuild-breakpoint
+      # - docker compose exec python bash
+      # - python get_request.py https://www.example.com
+      # - python get_request.py http://dynamo-test:8000
+      # - python create_table.py
+      # - python test_exec_dynamo.py
       - ./test.sh
       - exit
       - docker compose stop
