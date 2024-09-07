@@ -22,6 +22,8 @@ phases:
       - sleep 20 # 起動待ち
       - curl localhost:8003
       - docker compose exec python curl dynamo-test:8000
+      - docker compose exec python python get_request.py https://www.example.com
+      - docker compose exec python python get_request.py http://dynamo-test:8000
       - docker compose exec python ./test.sh
       - docker compose stop
       - aws s3 cp s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json .chalice/deployed/dev.json || true
