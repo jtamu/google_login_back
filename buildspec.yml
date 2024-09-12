@@ -20,6 +20,7 @@ phases:
       # - docker compose exec python curl ${DYNAMO_TEST_HOST_IP}:8000
       - docker compose ps
       - sleep 20 # 起動待ち
+      - docker logs google_login_back-dynamo-test-1
       - docker compose exec python curl dynamo-test:8000
       - docker compose exec python python check_botocore_connection.py
       # - curl localhost:8003
