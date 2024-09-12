@@ -19,6 +19,7 @@ phases:
       # - export DYNAMO_TEST_HOST_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' google_login_back-dynamo-test-1)
       # - docker compose exec python curl ${DYNAMO_TEST_HOST_IP}:8000
       - docker compose ps
+      - chmod 777 dynamodb-test/
       - sleep 20 # 起動待ち
       - docker logs google_login_back-dynamo-test-1
       - docker compose exec python curl dynamo-test:8000
