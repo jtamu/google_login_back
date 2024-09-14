@@ -14,34 +14,19 @@ phases:
       - export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
       - export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
       - docker compose up -d
-      - docker network ls
-      - 'docker ps --format "{{.Names}}: {{.Networks}}"'
-      # - export DYNAMO_TEST_HOST_IP=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' google_login_back-dynamo-test-1)
-      # - docker compose exec python curl ${DYNAMO_TEST_HOST_IP}:8000
-      - docker compose ps
       - chmod 777 dynamodb-test/
       - sleep 20 # 起動待ち
-      - docker logs google_login_back-dynamo-test-1
-      - docker compose exec python curl dynamo-test:8000
-      - docker compose exec python python check_botocore_connection.py
-      # - curl localhost:8003
-      # - codebuild-breakpoint
-      # - docker compose exec python bash
-      # - python get_request.py https://www.example.com
-      # - python get_request.py http://dynamo-test:8000
-      # - python create_table.py
-      # - python test_exec_dynamo.py
       - docker compose exec python ./test.sh
       - docker compose stop
-      # - aws s3 cp s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json .chalice/deployed/dev.json || true
+      - aws s3 cp s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json .chalice/deployed/dev.json || true
 
-  # build:
-  #   on-failure: ABORT
-  #   commands:
-  #     - chalice deploy
+  build:
+    on-failure: ABORT
+    commands:
+      - chalice deploy
 
-  # post_build:
-  #   on-failure: ABORT
-  #   commands:
-  #     - aws s3 cp .chalice/deployed/dev.json s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json
-  #     - python create_table.py
+  post_build:
+    on-failure: ABORT
+    commands:
+      - aws s3 cp .chalice/deployed/dev.json s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json
+      - python create_table.py
