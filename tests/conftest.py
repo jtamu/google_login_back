@@ -20,6 +20,14 @@ if STAGE == "ci":
     DB_ENDPOINT = "http://localhost:8003"
 
 
+@pytest.fixture()
+def refresh_table():
+    sub_env = os.environ.copy()
+    sub_env["DB_ENDPOINT"] = DB_ENDPOINT
+    subprocess.run(args=["python", "refresh_table.py"], env=sub_env)
+    yield
+
+
 @pytest.fixture(scope="session", autouse=True)
 def start_chalice_local():
     timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
@@ -29,7 +37,7 @@ def start_chalice_local():
 
     with open(filename, "w") as f:
         process = subprocess.Popen(
-            ["chalice", "local", "--host=0.0.0.0", f"--port={os.getenv('TEST_PORT')}", f"--stage={STAGE}"],
+            ["chalice", "local", "--host=0.0.0.0", f"--port={os.getenv('TEST_PORT')}", f"--stage={STAGE}", "--no-autoreload"],
             stdout=f,
             stderr=subprocess.STDOUT,
             text=True,
@@ -59,11 +67,3 @@ def token():
     res = requests.post("https://dev-yj8jxr3h2g1b3j0k.us.auth0.com/oauth/token", data)
 
     yield res.json()["access_token"]
-
-
-@pytest.fixture(scope="session", autouse=True)
-def create_table():
-    sub_env = os.environ.copy()
-    sub_env["DB_ENDPOINT"] = DB_ENDPOINT
-    subprocess.run(args=["python", "create_table.py"], env=sub_env)
-    yield

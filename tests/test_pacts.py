@@ -12,5 +12,5 @@ def provider_state(token):
     return _provider_state
 
 
-def test_pacts(pact_verifier, token):
+def test_pacts(pact_verifier, token, refresh_table):
     pact_verifier.verify(CHALICE_URL, provider_state(token), extra_provider_headers={'Authorization': f"Bearer {token}"})
