@@ -67,3 +67,11 @@ def token():
     res = requests.post("https://dev-yj8jxr3h2g1b3j0k.us.auth0.com/oauth/token", data)
 
     yield res.json()["access_token"]
+
+
+@pytest.fixture(scope="session", autouse=True)
+def create_table():
+    sub_env = os.environ.copy()
+    sub_env["DB_ENDPOINT"] = DB_ENDPOINT
+    subprocess.run(args=["python", "create_table.py"], env=sub_env)
+    yield
