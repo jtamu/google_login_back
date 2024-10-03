@@ -18,12 +18,14 @@ phases:
       - sleep 5 # 起動待ち
       - docker compose run python ./test.sh
       - docker compose stop
+      - docker run --rm -w ${PWD} -v ${PWD}:${PWD} pactfoundation/pact-cli:latest pact-broker can-i-deploy --pacticipant google-login-back --version $(git rev-parse HEAD) --to-environment ${ENV} --broker-base-url=${PACT_BROKER_BASE_URL} --broker-username ${PACT_BROKER_USERNAME} --broker-password ${PACT_BROKER_PASSWORD}
       - aws s3 cp s3://jtamu-chalice-deployed-bucket01/google_login_back/dev.json .chalice/deployed/dev.json || true
 
   build:
     on-failure: ABORT
     commands:
       - chalice deploy
+      - docker run --rm -w ${PWD} -v ${PWD}:${PWD} pactfoundation/pact-cli:latest pact-broker record-deployment --pacticipant google-login-back --version $(git rev-parse HEAD) --environment ${ENV} --broker-base-url=${PACT_BROKER_BASE_URL} --broker-username ${PACT_BROKER_USERNAME} --broker-password ${PACT_BROKER_PASSWORD}
 
   post_build:
     on-failure: ABORT
