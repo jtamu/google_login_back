@@ -16,8 +16,6 @@ AUTH0_TEST_USER_PASSWORD = ssm.get_parameter(Name="/auth0/test-user01/password")
 STAGE = os.getenv('STAGE')
 
 DB_ENDPOINT = "http://dynamo-test:8000"
-if STAGE == "ci":
-    DB_ENDPOINT = "http://localhost:8003"
 
 
 @pytest.fixture()
