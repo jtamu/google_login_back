@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone
 from chalicelib.models import Microposts
 from chalicelib.utils import login
 import jwt
+import random
 
 
 app = Chalice(app_name="google_login_back")
@@ -177,7 +178,7 @@ def get_micropost_for_auth0():
         return Response(body=None, status_code=401)
 
     posts = Microposts.query(payload.get("sub"))
-    res = [post.to_simple_dict() for post in posts]
+    res = [{**post.to_simple_dict(), "like": random.randrange(1000)} for post in posts]
     return Response(body=res, status_code=200)
 
 
