@@ -178,7 +178,9 @@ def get_micropost_for_auth0():
         return Response(body=None, status_code=401)
 
     posts = Microposts.query(payload.get("sub"))
-    res = [{**post.to_simple_dict(), "like": random.randrange(1000)} for post in posts]
+    res = [
+        {**post.to_simple_dict(), "like": random.randrange(1000), "favorite": random.randrange(1000)} for post in posts
+    ]
     return Response(body=res, status_code=200)
 
 
