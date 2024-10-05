@@ -13,6 +13,7 @@ phases:
       - export AWS_ACCESS_KEY_ID=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.AccessKeyId')
       - export AWS_SECRET_ACCESS_KEY=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SecretAccessKey')
       - export AWS_SESSION_TOKEN=$(echo "${TEMP_ROLE}" | jq -r '.Credentials.SessionToken')
+      - echo $DOCKER_TOKEN | docker login -u $DOCKER_USER --password-stdin
       - docker compose up dynamo-test -d
       - chmod 777 dynamodb-test/
       - sleep 5 # 起動待ち
